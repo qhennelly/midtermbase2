@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>United States Percent Aging</title>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
+
+        <style type="text/css">
+          html, body { margin: 0; padding: 0; height: 100%; }
+          #map { min-height: 100%; }
+        </style>
+
+        <script type="text/javascript" src ="UStatesA.geoJson"></script>
+   </head>
+
+    <body>
+        <div id="map"></div>
+
+        <script type="text/javascript">
+
+          var map = L.map('map', {
+              center: [40.52,-99.54],
+              zoom: 4
+          });
+
+         L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+           attribution: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+           maxZoom: 20,
+           minZoom: 4
+         }).addTo(map);
+
+         var canvas = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+            attribution: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+            maxZoom: 20,
+            minZoom: 4
+          }).addTo(map);
+
+          var imagery = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+             attribution: 'Map data © OpenStreetMap contributors, CC-BY-SA, Imagery © Mapbox',
+             maxZoom: 20,
+             minZoom: 4,
+             id: 'mapbox.satellite',
+             accessToken:'pk.eyJ1IjoicWhlbm5lbGx5IiwiYSI6ImNrZnltaXM5MTBkdGczM29kMHhlM2wwOXUifQ.T5JTaoO81Fxb5slgF3LHkg'
+           });
+
+       function getColor(value) {
+             return value > 17.3 ? '#006d2c':
+                    value > 15 ? '#31a354':
+                    value > 14  ? '#74c476':
+                    value > 11  ? '#bae4b3':
+                                  '#edf8e9';
+           }
+       function style(feature){
+               return {
+                       fillColor: getColor(feature.properties.per_aging),
+                       weight: 2,
+                       opacity: 1,
+                       color: 'gray',
+                       fillOpacity: 0.9,
+                       dashArray: 5
+                     };}
+          var states = L.geoJson(per_aging,{style:style}).addTo(map);
+
+          geojson = L.geoJson(data, {
+          style:style,
+          onEachFeature: onEachFeature
+          }).bindPopup(function (layer){
+          return layer.feature.properties.NAME
++ '<p style="color:green">' + layer.feature.properties.UStatesA.toString(NAME10);
+                  }).addTo(map);
+
+  var legend = L.control({position: 'bottomright'});
+      legend.onAdd = function (map) {
+
+  var div = L.DomUtil.create('div', 'legend'),
+      grades = [9, 11, 14, 15, 17.3];
+     div.innerHTML = '<b>Percent aging population 65 and over <br></b>';}
+
+  for (var i = 0; i < grades.length; i++) {
+    div.innerHTML +=
+         '<i style="background:' + getColor(grades[i] + 1) + '"></i>' +
+          grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+              }
+    legend.addTo(map);
+
+          var basemaps = {
+              "Light Canvas": canvas,
+              "Satellite Imagery": imagery
+          };
+
+          var overlaymaps = {
+              "US Counties": Counties
+          };
+
+L.control.layers(UsAge.js.qgs, UsCounties.js.qgs).addTo(map);
+
+map.on('overlayremove', function(eventLayer){
+  if (eventLayer.name == 'US Counties'){
+    map.removeControl(legend);
+  }
+});
+
+map.on('overlayadd', function(eventLayer){
+  if (eventLayer.name == 'US Counties'){
+    legend.addTo(map);
+  }
+});
+
+        </script>
+   </body>
+</html>
